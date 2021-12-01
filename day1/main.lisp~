@@ -1,0 +1,12 @@
+(defun get-nums ()
+  (with-open-file (stream "input")
+    (loop :for line = (readline stream nil)
+		      :while line
+	  :collect (parse-integer line))))
+	  (prev 10000))
+      (maplist (lambda (lst)
+		 (if (> (car lst) (cadr lst))
+      
+	  (loop :for i in nums
+		:summing (progn
+			   (setq tmp prev(if (> i prev) 1 0)
