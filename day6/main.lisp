@@ -26,7 +26,6 @@
   (let ((arr (make-array 9 :initial-element 0 :adjustable t)))
     (loop :for i across vec
 	  :do (setf (aref arr i) (1+ (aref arr i))))
-    (print arr)
     (loop :for i from 1 to 256
 	  :do (let ((head (aref arr 0)))
 		(setq arr (make-array 8 :adjustable t :initial-contents
@@ -35,9 +34,3 @@
 	        (vector-push-extend head arr)))
     (loop :for i across arr
 	  :sum i)))
-    (loop :for line = (let ((ln (read-line stream nil)))
-			(if ln (setq width (length ln)))
-			ln)
-	  :while line
-	  :collect (mapcar (lambda (p) (mapcar 'parse-integer (cl-ppcre:split "," p)))
-			   (cl-ppcre:split " -> " line)))))
