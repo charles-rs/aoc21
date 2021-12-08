@@ -14,3 +14,12 @@
 		     :collect (loop :for n in nums
 				    :sum (let ((tmp (abs (- i n))))
 					   (/ (* tmp (1+ tmp)) 2))))))
+
+(defun parta-fast (nums)
+  (let* ((len (length nums))
+	 (idx (aref (sort (make-array len :initial-contents nums) '<) (floor (/ len 2)))))
+    (loop for n in nums sum (abs (- n idx)))))
+
+(defun partb-fast (nums)
+  (let ((idx (floor (/ (reduce '+ nums) (length nums)))))
+    (loop for n in nums sum (let ((tmp (abs (- n idx)))) (/ (* tmp (1+ tmp)) 2)))))
