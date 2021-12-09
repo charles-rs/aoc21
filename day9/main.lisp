@@ -65,16 +65,16 @@
 								      (cdr pair)
 								      (cons (cons i j) so-far)))))
 				(reduce 'my-union others :initial-value so-far)))))))
-      (let ((lens
-	      (sort  (mapcar 'length
-			     (reduce 'my-union
-				     (loop :for i from 0 to (car dims)
-					   :collect
-					   (loop :for j from 0 to (cadr dims)
-						 :if (check-pos i j)
-						   :collect
-						   (remove-if
-						    (lambda (pair)
-						      (= 9 (get-pos (car pair) (cdr pair))))
-						    (get-basin i j nil)))))) '>)))
+      (let ((lens (sort
+		   (mapcar 'length
+			   (reduce 'my-union
+				   (loop :for i from 0 to (car dims)
+					 :collect
+					 (loop :for j from 0 to (cadr dims)
+					       :if (check-pos i j)
+						 :collect
+						 (remove-if
+						  (lambda (pair)
+						    (= 9 (get-pos (car pair) (cdr pair))))
+						  (get-basin i j nil)))))) '>)))
 	(* (car lens) (cadr lens) (caddr lens))))))
