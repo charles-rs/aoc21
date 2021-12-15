@@ -1,0 +1,68 @@
+(ql:quickload "cl-ppcre")
+
+(defun get-nums ()
+  (with-open-file (stream "input")
+    (let* ((lst (loop :for line = (read-line stream nil)
+		      :while line
+		      :collect (mapcar 'digit-char-p (coerce line 'list))))
+	   (arr (make-array (list (length lst) (length (car lst)))
+			    :initial-contents lst)))
+      arr)))
+
+(defvar big 9999999999999999999999999999999999)
+
+(defun parta ()
+  (let ((graph (get-nums)))
+    (parta-helper graph)))
+
+(defun parta-helper (graph)
+  (let* ((dims (array-dimensions graph))
+	 (dp (make-array dims :initial-element nil))
+	 (updated t))
+    (labels ((get-cost (i j)
+	       (if (and (>= i 0) (>= j 0) (< i (car dims)) (< j (cadr dims)))
+		   (aref dp i j)
+		   big)))
+      (setf (aref dp 0 0) 0)
+      (loop :for i from 0 below (car dims)
+	    :do (loop :for j from 0 below (cadr dims)
+		      :do (if (equal (cons i j) '(0 . 0))
+			      nil
+			      (setf (aref dp i j)
+				    (+ (aref graph i j)
+				       (min (get-cost i (1- j))
+					    (get-cost (1- i) j)))))))
+      (loop :while updated
+	    :do (progn
+		  (setq updated nil)
+		  (loop :for i from 0 below (car dims)
+			:do (loop :for j from 0 below (cadr dims)
+				  :do (let* ((cost (aref graph i j))
+					     (cur (aref dp i j))
+					     (potmin (+ cost (min (get-cost (1- i) j)
+								  (get-cost (1+ i) j)
+								  (get-cost i (1- j))
+								  (get-cost i (1+ j))))))
+					(if (< potmin cur)
+					    (progn (setf updated t)
+						   (setf (aref dp i j) potmin))))))))
+      (aref dp (1- (car dims)) (1- (cadr dims))))))
+
+(defun expand-array (arr n)
+  (let* ((dims (array-dimensions arr))
+	 (outcome (make-array (mapcar (lambda (x) (* x n)) dims))))
+    (loop :for i from 0 below (* n (car dims))
+	  :do (loop :for j from 0 below (* n (cadr dims))
+		    :do (let* ((i-square (floor (/ i (car dims))))
+			       (j-square (floor (/ j (cadr dims))))
+			       (out-tmp (mod (+ i-square j-square
+					(aref arr
+					      (mod i (car dims))
+					      (mod j (cadr dims)))) 9)))
+			  (setf (aref outcome i j)
+				(if (= out-tmp 0) 9 out-tmp)))))
+    outcome))
+
+(defun partb ()
+  (let ((graph (expand-array (get-nums) 5)))
+    (parta-helper graph)))
