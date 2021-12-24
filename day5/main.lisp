@@ -1,5 +1,3 @@
-;; drunken bullshit don't judge style
-
 (ql:quickload "cl-ppcre")
 
 (defun delimiterp (c) (char= c #\Space))
