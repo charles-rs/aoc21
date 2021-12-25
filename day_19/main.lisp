@@ -115,7 +115,7 @@
 (defun l1-dist (pt1 pt2)
   (loop :for x across (sub pt1 pt2)
 	:sum (abs x)))
-(reduce '+ (mapcar #'abs (coerce (copy-array (sub pt1 pt2)) 'list))))
+;(reduce '+ (mapcar #'abs (coerce (copy-array (sub pt1 pt2)) 'list))))
 
 (defun max-l1 (pts)
   (let ((max 0))

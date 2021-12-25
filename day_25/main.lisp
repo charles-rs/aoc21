@@ -1,0 +1,43 @@
+(defun get-nums ()
+  (with-open-file (stream "input")
+    (let* ((lst (loop :for line = (read-line stream nil)
+		      :while line
+		      :collect (mapcar (lambda (c) (if (char= c #\.) nil c)) (coerce line 'list))))
+	   (arr (make-array (list (length lst) (length (car lst)))
+			    :initial-contents lst)))
+      arr)))
+
+(defun step-once (arr)
+  (let* ((dims (array-dimensions arr))
+	 (new-arr (make-array dims :initial-element nil))
+	 (moved nil))
+    (flet ((forward (i) (mod (1+ i) (first dims)))
+	   (below (j) (mod (1+ j) (second dims))))
+      (loop :for i from 0 below (first dims)
+	    :do (loop :for j from 0 below (second dims)
+		      :if (equal #\> (aref arr i j))
+			:do (if (aref arr i (below j))
+				(setf (aref new-arr i j) #\>)
+				(progn
+				  (setq moved t)
+				  (setf (aref new-arr i (below j)) #\>)))))
+
+      (loop :for i from 0 below (first dims)
+	    :do (loop :for j from 0 below (second dims)
+		      :if (equal #\v (aref arr i j))
+			:do (if (or (equal (aref arr (forward i) j) #\v)
+				    (equal (aref new-arr (forward i) j) #\>))
+				(setf (aref new-arr i j) #\v)
+				(progn
+				  (setq moved t)
+				  (setf (aref new-arr (forward i) j) #\v)))))
+      (values new-arr moved))))
+
+(defun parta ()
+  (let ((arr (get-nums))
+	(count 0)
+	(moved t))
+    (loop :while moved
+	  :do (progn (multiple-value-setq (arr moved) (step-once arr))
+		     (setq count (1+ count))))
+    count))
